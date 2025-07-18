@@ -1,0 +1,33 @@
+# 1. Build the cluster
+
+docker build -t local-mongo-cluster .
+
+# 2. run the cluster with all ports exposed
+
+docker run -d --name mongo-cluster-dev \
+  -p 27017:27017 \
+  -p 27018:27018 \
+  -p 27019:27019 \
+  -p 27020:27020 \
+  -p 27021:27021 \
+  -p 27022:27022 \
+  -p 27023:27023 \
+  -p 27024:27024 \
+  -p 27025:27025 \
+  local-mongo-cluster
+
+# 3. run the cluster with only mongos ports exposed
+
+docker run -d --name mongo-cluster-dev \
+  -p 27017:27017 \
+  -p 27018:27018 \
+  -p 27019:27019 \
+  local-mongo-cluster
+
+# 4. Check the docker logs to verify the cluster building
+
+docker logs mongo-cluster-dev -f
+
+# 5. Using mongo shell to login into the system and check
+
+mongosh mongodb://localhost:27017
