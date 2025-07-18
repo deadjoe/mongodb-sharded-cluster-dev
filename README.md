@@ -38,12 +38,18 @@
 
 ### 构建和运行
 
-1. **构建Docker镜像**
+1. **克隆仓库**
+   ```bash
+   git clone https://github.com/deadjoe/mongodb_dev.git
+   cd mongodb_dev
+   ```
+
+2. **构建Docker镜像**
    ```bash
    docker build -t local-mongo-cluster .
    ```
 
-2. **运行集群**
+3. **运行集群**
    ```bash
    docker run -d --name mongo-cluster-dev \
      -p 27017:27017 \
@@ -58,7 +64,7 @@
      local-mongo-cluster
    ```
 
-3. **查看启动日志**
+4. **查看启动日志**
    ```bash
    docker logs mongo-cluster-dev -f
    ```
@@ -198,6 +204,24 @@ sh.getBalancerState()
 
 ## 文件结构
 
+### 项目文件说明
+
+| 文件名 | 类型 | 说明 |
+|--------|------|------|
+| **Markdown文档** | | |
+| README.md | .md | 项目主要文档，包含完整的使用说明和配置指南 |
+| CONFIG.md | .md | MongoDB分片集群测试脚本配置指南，详细说明test-cluster.sh的配置参数 |
+| **JavaScript配置脚本** | | |
+| init-replica.js | .js | 配置服务器副本集初始化脚本，用于设置configReplSet副本集 |
+| init-shard.js | .js | 分片副本集初始化脚本，用于设置shard1副本集，包含扩展第二个分片的详细指导 |
+| init-router.js | .js | mongos路由器配置脚本，用于向分片集群添加分片 |
+| **Shell脚本** | | |
+| start-cluster.sh | .sh | 集群启动脚本，按正确顺序启动MongoDB分片集群的所有组件 |
+| test-cluster.sh | .sh | 完整的MongoDB分片集群测试脚本，包含11个测试阶段和详细的调试功能 |
+| validate-tests.sh | .sh | 测试脚本验证工具，用于验证test-cluster.sh中的所有测试命令 |
+
+### 目录结构
+
 ```
 .
 ├── Dockerfile              # Docker镜像定义
@@ -205,6 +229,9 @@ sh.getBalancerState()
 ├── init-replica.js         # 配置服务器副本集初始化
 ├── init-shard.js           # 分片副本集初始化
 ├── init-router.js          # mongos路由器配置
+├── test-cluster.sh         # 集群测试脚本
+├── validate-tests.sh       # 测试验证工具
+├── CONFIG.md              # 测试脚本配置指南
 ├── README.md              # 项目文档
 └── LICENSE                # MIT许可证
 ```
