@@ -2,15 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-一个完整的MongoDB分片集群Docker解决方案，专为本地开发环境设计。在单个Docker容器中运行完整的MongoDB分片集群，包括3个mongos路由器、3个配置服务器和1个分片（含3个副本集成员）。
-
-## 项目特点
-
-- **完整的分片集群架构**：包含mongos路由器、配置服务器和分片服务器
-- **高可用性设计**：每个组件都采用副本集架构，确保数据安全性
-- **开发环境优化**：单容器部署，简化开发和测试流程
-- **详细的中文文档**：包含完整的配置说明和扩展指南
-- **生产就绪**：遵循MongoDB官方最佳实践
+一个完整的MongoDB分片集群Docker解决方案，专为本地开发环境设计。在单个Docker容器中运行完整的MongoDB分片集群。
 
 ## 集群架构
 
