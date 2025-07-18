@@ -69,6 +69,16 @@
    docker logs mongo-cluster-dev -f
    ```
 
+5. **停止容器**
+   ```bash
+   docker stop mongo-cluster-dev
+   ```
+
+6. **销毁容器**
+   ```bash
+   docker rm mongo-cluster-dev
+   ```
+
 ### 验证集群状态
 
 使用mongosh连接到集群并检查状态：
@@ -85,6 +95,26 @@ sh.status()
 
 // 查看副本集状态
 rs.status()
+```
+
+## 图形界面管理工具
+
+### 安装MongoDB Compass
+
+如果希望使用图形界面管理MongoDB集群，可以安装MongoDB Compass：
+
+**使用Homebrew安装（推荐）：**
+```bash
+brew install mongodb-compass
+```
+
+**官方安装方式：**
+访问 [MongoDB Compass官网](https://www.mongodb.com/products/compass) 下载适合您操作系统的版本。
+
+**连接到集群：**
+启动MongoDB Compass后，使用以下连接字符串：
+```
+mongodb://localhost:27017
 ```
 
 ## 连接集群
