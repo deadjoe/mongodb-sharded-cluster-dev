@@ -69,9 +69,9 @@
    docker logs mongo-cluster-dev -f
    ```
 
-5. **停止容器**
+5. **启动|停止容器**
    ```bash
-   docker stop mongo-cluster-dev
+   docker start|stop mongo-cluster-dev
    ```
 
 6. **销毁容器**
