@@ -124,7 +124,7 @@ validate_config() {
         log_warning "建议配置至少3个分片服务器以确保高可用性"
     fi
     
-    log_success "配置验证通过"
+    echo -e "${GREEN}[SUCCESS]${NC} 配置验证通过"
     return 0
 }
 
