@@ -9,9 +9,9 @@ FROM mongo:latest
 RUN mkdir -p /data/config1 /data/config2 /data/config3 /data/shard1a /data/shard1b /data/shard1c /scripts
 
 # 复制MongoDB初始化脚本到容器
-COPY init-replica.js /scripts/   # 配置服务器副本集初始化脚本
-COPY init-shard.js /scripts/     # 分片副本集初始化脚本  
-COPY init-router.js /scripts/    # mongos路由器分片配置脚本
+COPY init-replica.js /scripts/
+COPY init-shard.js /scripts/
+COPY init-router.js /scripts/
 
 # 复制集群启动脚本并设置执行权限
 COPY start-cluster.sh /scripts/
