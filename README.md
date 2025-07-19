@@ -32,8 +32,8 @@
 
 1. **克隆仓库**
    ```bash
-   git clone https://github.com/deadjoe/mongodb_dev.git
-   cd mongodb_dev
+   git clone https://github.com/deadjoe/mongodb-sharded-cluster-dev.git
+   cd mongodb-sharded-cluster-dev
    ```
 
 2. **构建Docker镜像**
