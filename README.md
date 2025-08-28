@@ -1,47 +1,47 @@
-# MongoDB分片集群开发环境
+# MongoDB Sharded Cluster Development Environment
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-一个完整的MongoDB分片集群Docker解决方案，专为本地开发环境设计。在单个Docker容器中运行完整的MongoDB分片集群。
+A complete MongoDB sharded cluster Docker solution designed for local development environments. Run a full MongoDB sharded cluster in a single Docker container.
 
-## 集群架构
+## Cluster Architecture
 
-### 端口分配
+### Port Allocation
 
-| 组件 | 端口范围 | 说明 |
-|------|----------|------|
-| mongos路由器 | 27017-27019 | 3个mongos实例，提供客户端连接入口 |
-| 配置服务器 | 27020-27022 | 3个配置服务器副本集成员 |
-| 分片服务器 | 27023-27025 | 第一个分片的3个副本集成员 |
+| Component | Port Range | Description |
+|-----------|------------|-------------|
+| mongos routers | 27017-27019 | 3 mongos instances providing client connection endpoints |
+| config servers | 27020-27022 | 3 config server replica set members |
+| shard servers | 27023-27025 | 3 replica set members for the first shard |
 
-### 组件说明
+### Component Overview
 
-- **mongos路由器**：负责接收客户端请求并将其路由到适当的分片
-- **配置服务器**：存储分片集群的元数据和配置信息
-- **分片服务器**：存储实际的应用程序数据
+- **mongos routers**: Handle client requests and route them to appropriate shards
+- **config servers**: Store metadata and configuration information for the sharded cluster
+- **shard servers**: Store the actual application data
 
-## 快速开始
+## Quick Start
 
-### 前置要求
+### Prerequisites
 
-- Docker (推荐使用OrbStack、Docker Desktop等)
-- 至少4GB可用内存
-- 端口27017-27025可用
+- Docker (OrbStack, Docker Desktop, or similar recommended)
+- At least 4GB available memory
+- Ports 27017-27025 available
 
-### 构建和运行
+### Build and Run
 
-1. **克隆仓库**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/deadjoe/mongodb-sharded-cluster-dev.git
    cd mongodb-sharded-cluster-dev
    ```
 
-2. **构建Docker镜像**
+2. **Build Docker image**
    ```bash
    docker build -t local-mongo-cluster .
    ```
 
-3. **运行集群**
+3. **Run the cluster**
    ```bash
    docker run -d --name mongo-cluster-dev \
      -p 27017:27017 \
@@ -56,71 +56,71 @@
      local-mongo-cluster
    ```
 
-4. **查看启动日志**
+4. **View startup logs**
    ```bash
    docker logs mongo-cluster-dev -f
    ```
 
-5. **启动|停止容器**
+5. **Start|Stop container**
    ```bash
    docker start|stop mongo-cluster-dev
    ```
 
-6. **销毁容器**
+6. **Remove container**
    ```bash
    docker rm mongo-cluster-dev
    ```
 
-### 验证集群状态
+### Verify Cluster Status
 
-使用mongosh连接到集群并检查状态：
+Connect to the cluster using mongosh and check status:
 
 ```bash
 mongosh mongodb://localhost:27017
 ```
 
-在mongosh中执行：
+Execute in mongosh:
 
 ```javascript
-// 查看分片集群状态
+// View sharded cluster status
 sh.status()
 
-// 查看副本集状态
+// View replica set status
 rs.status()
 ```
 
-## 图形界面管理工具
+## GUI Management Tools
 
-### 安装MongoDB Compass
+### Installing MongoDB Compass
 
-如果希望使用图形界面管理MongoDB集群，可以安装MongoDB Compass：
+If you want to use a graphical interface to manage your MongoDB cluster, you can install MongoDB Compass:
 
-**使用Homebrew安装（推荐）：**
+**Install using Homebrew (recommended):**
 ```bash
 brew install mongodb-compass
 ```
 
-**官方安装方式：**
-访问 [MongoDB Compass官网](https://www.mongodb.com/products/compass) 下载适合您操作系统的版本。
+**Official installation:**
+Visit the [MongoDB Compass website](https://www.mongodb.com/products/compass) to download the version appropriate for your operating system.
 
-**连接到集群：**
-启动MongoDB Compass后，使用以下连接字符串：
+**Connect to cluster:**
+After launching MongoDB Compass, use the following connection string:
 ```
 mongodb://localhost:27017
 ```
 
-## 连接集群
+## Connecting to the Cluster
 
-### 连接字符串
+### Connection Strings
 
-- **单个mongos连接**：`mongodb://localhost:27017`
-- **多个mongos连接**：`mongodb://localhost:27017,localhost:27018,localhost:27019`
-- **直接连接分片**：`mongodb://localhost:27023,localhost:27024,localhost:27025`
+- **Single mongos connection**: `mongodb://localhost:27017`
+- **Multiple mongos connection**: `mongodb://localhost:27017,localhost:27018,localhost:27019`
+- **Direct shard connection**: `mongodb://localhost:27023,localhost:27024,localhost:27025`
 
-### 推荐的连接方式
+### Recommended Connection Method
 
 ```javascript
-// Node.js应用示例
+// Node.js application example
 const { MongoClient } = require('mongodb');
 
 const uri = "mongodb://localhost:27017,localhost:27018,localhost:27019";
@@ -131,11 +131,11 @@ async function run() {
     await client.connect();
     console.log("Connected to MongoDB sharded cluster");
     
-    // 使用数据库
+    // Use database
     const db = client.db("myapp");
     const collection = db.collection("users");
     
-    // 执行操作...
+    // Perform operations...
     
   } finally {
     await client.close();
@@ -143,141 +143,141 @@ async function run() {
 }
 ```
 
-## 分片数据库
+## Sharding Databases
 
-### 启用分片
+### Enabling Sharding
 
 ```javascript
-// 连接到mongos
+// Connect to mongos
 use myapp
 
-// 启用数据库分片
+// Enable database sharding
 sh.enableSharding("myapp")
 
-// 为集合创建分片键
+// Create shard key for collection
 sh.shardCollection("myapp.users", {"_id": "hashed"})
 ```
 
-### 分片键选择指南
+### Shard Key Selection Guide
 
-- **哈希分片**：适合写入密集型应用，确保数据均匀分布
-- **范围分片**：适合范围查询，但可能导致热点问题
-- **复合分片键**：结合多个字段，提供更好的查询性能
+- **Hashed sharding**: Suitable for write-intensive applications, ensures even data distribution
+- **Range sharding**: Suitable for range queries, but may cause hotspot issues
+- **Compound shard keys**: Combine multiple fields for better query performance
 
-## 扩展集群
+## Scaling the Cluster
 
-### 添加第二个分片
+### Adding a Second Shard
 
-按照`init-shard.js`文件中的详细说明，可以轻松添加更多分片：
+Following the detailed instructions in the `init-shard.js` file, you can easily add more shards:
 
-1. 修改`Dockerfile`添加新的数据目录和端口
-2. 创建新的分片初始化脚本
-3. 更新`start-cluster.sh`启动新分片
-4. 通过`sh.addShard()`添加到集群
+1. Modify `Dockerfile` to add new data directories and ports
+2. Create new shard initialization scripts
+3. Update `start-cluster.sh` to start new shards
+4. Add to cluster using `sh.addShard()`
 
-### 水平扩展建议
+### Horizontal Scaling Recommendations
 
-- 每个分片建议配置奇数个副本集成员（3、5、7等）
-- 根据数据量和查询模式决定分片数量
-- 监控分片间的数据分布，必要时进行负载均衡
+- Configure odd numbers of replica set members per shard (3, 5, 7, etc.)
+- Determine shard count based on data volume and query patterns
+- Monitor data distribution across shards, perform load balancing when necessary
 
-## 监控和维护
+## Monitoring and Maintenance
 
-### 集群健康检查
+### Cluster Health Checks
 
 ```javascript
-// 检查分片状态
+// Check shard status
 sh.status()
 
-// 检查副本集状态
+// Check replica set status
 rs.status()
 
-// 检查平衡器状态
+// Check balancer status
 sh.getBalancerState()
 ```
 
-### 日志文件位置
+### Log File Locations
 
-- mongos日志：`/data/mongos1.log`、`/data/mongos2.log`、`/data/mongos3.log`
-- 配置服务器日志：`/data/config1/config1.log`、`/data/config2/config2.log`、`/data/config3/config3.log`
-- 分片服务器日志：`/data/shard1a/shard1a.log`、`/data/shard1b/shard1b.log`、`/data/shard1c/shard1c.log`
+- mongos logs: `/data/mongos1.log`, `/data/mongos2.log`, `/data/mongos3.log`
+- Config server logs: `/data/config1/config1.log`, `/data/config2/config2.log`, `/data/config3/config3.log`
+- Shard server logs: `/data/shard1a/shard1a.log`, `/data/shard1b/shard1b.log`, `/data/shard1c/shard1c.log`
 
-### 常见问题排查
+### Common Troubleshooting
 
-1. **连接失败**：检查端口是否被占用，确认防火墙设置
-2. **分片初始化失败**：查看相关日志文件，确认副本集状态
-3. **数据不平衡**：运行`sh.startBalancer()`手动触发平衡
+1. **Connection failures**: Check if ports are occupied, confirm firewall settings
+2. **Shard initialization failures**: Check relevant log files, confirm replica set status
+3. **Data imbalance**: Run `sh.startBalancer()` to manually trigger balancing
 
-## 生产环境部署
+## Production Deployment
 
-### 安全建议
+### Security Recommendations
 
-- 启用认证和授权
-- 配置TLS/SSL加密
-- 设置适当的网络访问控制
-- 定期备份配置和数据
+- Enable authentication and authorization
+- Configure TLS/SSL encryption
+- Set appropriate network access controls
+- Regular backup of configuration and data
 
-### 性能优化
+### Performance Optimization
 
-- 根据硬件配置调整内存分配
-- 优化分片键选择
-- 监控和调整索引策略
-- 配置适当的读写关注
+- Adjust memory allocation based on hardware configuration
+- Optimize shard key selection
+- Monitor and adjust indexing strategies
+- Configure appropriate read/write concerns
 
-## 文件结构
+## File Structure
 
-### 项目文件说明
+### Project File Descriptions
 
-| 文件名 | 类型 | 说明 |
-|--------|------|------|
-| **Markdown文档** | | |
-| README.md | .md | 项目主要文档，包含完整的使用说明和配置指南 |
-| CONFIG.md | .md | MongoDB分片集群测试脚本配置指南，详细说明test-cluster.sh的配置参数 |
-| **JavaScript配置脚本** | | |
-| init-replica.js | .js | 配置服务器副本集初始化脚本，用于设置configReplSet副本集 |
-| init-shard.js | .js | 分片副本集初始化脚本，用于设置shard1副本集，包含扩展第二个分片的详细指导 |
-| init-router.js | .js | mongos路由器配置脚本，用于向分片集群添加分片 |
-| **Shell脚本** | | |
-| start-cluster.sh | .sh | 集群启动脚本，按正确顺序启动MongoDB分片集群的所有组件 |
-| test-cluster.sh | .sh | 完整的MongoDB分片集群测试脚本，包含11个测试阶段和详细的调试功能 |
-| validate-tests.sh | .sh | 测试脚本验证工具，用于验证test-cluster.sh中的所有测试命令 |
+| Filename | Type | Description |
+|----------|------|-------------|
+| **Markdown Documentation** | | |
+| README.md | .md | Main project documentation with complete usage instructions and configuration guide |
+| CONFIG.md | .md | MongoDB sharded cluster test script configuration guide, detailing test-cluster.sh configuration parameters |
+| **JavaScript Configuration Scripts** | | |
+| init-replica.js | .js | Config server replica set initialization script for setting up configReplSet |
+| init-shard.js | .js | Shard replica set initialization script for setting up shard1, includes detailed guidance for extending to a second shard |
+| init-router.js | .js | mongos router configuration script for adding shards to the cluster |
+| **Shell Scripts** | | |
+| start-cluster.sh | .sh | Cluster startup script that starts all MongoDB sharded cluster components in the correct order |
+| test-cluster.sh | .sh | Complete MongoDB sharded cluster test script with 11 test phases and detailed debugging capabilities |
+| validate-tests.sh | .sh | Test script validation tool for verifying all test commands in test-cluster.sh |
 
-### 目录结构
+### Directory Structure
 
 ```
 .
-├── Dockerfile              # Docker镜像定义
-├── start-cluster.sh        # 集群启动脚本
-├── init-replica.js         # 配置服务器副本集初始化
-├── init-shard.js           # 分片副本集初始化
-├── init-router.js          # mongos路由器配置
-├── test-cluster.sh         # 集群测试脚本
-├── validate-tests.sh       # 测试验证工具
-├── CONFIG.md              # 测试脚本配置指南
-├── README.md              # 项目文档
-└── LICENSE                # MIT许可证
+├── Dockerfile              # Docker image definition
+├── start-cluster.sh        # Cluster startup script
+├── init-replica.js         # Config server replica set initialization
+├── init-shard.js           # Shard replica set initialization
+├── init-router.js          # mongos router configuration
+├── test-cluster.sh         # Cluster test script
+├── validate-tests.sh       # Test validation tool
+├── CONFIG.md              # Test script configuration guide
+├── README.md              # Project documentation
+└── LICENSE                # MIT License
 ```
 
-## 技术支持
+## Support
 
-如果您在使用过程中遇到问题，请：
+If you encounter issues during usage:
 
-1. 查看容器日志：`docker logs mongo-cluster-dev`
-2. 检查MongoDB官方文档
-3. 提交Issue到项目仓库
+1. Check container logs: `docker logs mongo-cluster-dev`
+2. Consult MongoDB official documentation
+3. Submit issues to the project repository
 
-## 许可证
+## License
 
-本项目采用MIT许可证，详见 [LICENSE](LICENSE) 文件。
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## 贡献指南
+## Contributing
 
-欢迎提交Issue和Pull Request。请确保：
+Issues and Pull Requests are welcome. Please ensure:
 
-- 遵循现有的代码风格
-- 添加适当的测试和文档
-- 确保所有测试通过
+- Follow existing code style
+- Add appropriate tests and documentation
+- Ensure all tests pass
 
 ---
 
-**注意**：此项目主要用于开发和测试环境。在生产环境中使用时，请根据实际需求调整配置和安全设置。
+**Note**: This project is primarily for development and testing environments. When using in production, please adjust configuration and security settings according to actual requirements.

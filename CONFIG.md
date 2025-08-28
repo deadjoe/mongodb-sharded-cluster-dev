@@ -1,192 +1,192 @@
-# MongoDB分片集群测试脚本配置指南
+# MongoDB Sharded Cluster Test Script Configuration Guide
 
-## 概述
+## Overview
 
-`test-cluster.sh` 脚本支持灵活的配置，允许工程师根据自己的MongoDB分片集群部署调整端口和组件数量。
+The `test-cluster.sh` script supports flexible configuration, allowing engineers to adjust ports and component counts according to their MongoDB sharded cluster deployment.
 
-## 配置文件位置
+## Configuration File Location
 
-所有配置参数都集中在 `test-cluster.sh` 脚本的顶部 **"📝 集群配置参数"** 区域中（第10-30行）。
+All configuration parameters are centralized in the **"📝 Cluster Configuration Parameters"** section at the top of the `test-cluster.sh` script (lines 10-30).
 
-## 配置参数详解
+## Configuration Parameters Details
 
-### 1. mongos路由器配置
+### 1. mongos Router Configuration
 
 ```bash
-# mongos路由器配置
-MONGOS_PORTS=(27017 27018 27019)  # mongos路由器端口列表
-MONGOS_COUNT=${#MONGOS_PORTS[@]}  # 自动计算mongos数量
+# mongos router configuration
+MONGOS_PORTS=(27017 27018 27019)  # mongos router port list
+MONGOS_COUNT=${#MONGOS_PORTS[@]}  # automatically calculate mongos count
 ```
 
-**说明：**
-- `MONGOS_PORTS`：数组，包含所有mongos路由器的端口
-- `MONGOS_COUNT`：自动计算，无需手动修改
-- **最少配置：** 1个mongos
-- **推荐配置：** 3个mongos以确保高可用性
+**Description:**
+- `MONGOS_PORTS`: Array containing all mongos router ports
+- `MONGOS_COUNT`: Automatically calculated, no manual modification needed
+- **Minimum configuration:** 1 mongos
+- **Recommended configuration:** 3 mongos to ensure high availability
 
-### 2. 配置服务器配置
+### 2. Config Server Configuration
 
 ```bash
-# 配置服务器配置
-CONFIG_PORTS=(27020 27021 27022)  # 配置服务器端口列表
-CONFIG_COUNT=${#CONFIG_PORTS[@]}  # 自动计算配置服务器数量
+# config server configuration
+CONFIG_PORTS=(27020 27021 27022)  # config server port list
+CONFIG_COUNT=${#CONFIG_PORTS[@]}  # automatically calculate config server count
 ```
 
-**说明：**
-- `CONFIG_PORTS`：数组，包含所有配置服务器的端口
-- `CONFIG_COUNT`：自动计算，无需手动修改
-- **最少配置：** 1个配置服务器
-- **推荐配置：** 3个配置服务器（生产环境必须）
+**Description:**
+- `CONFIG_PORTS`: Array containing all config server ports
+- `CONFIG_COUNT`: Automatically calculated, no manual modification needed
+- **Minimum configuration:** 1 config server
+- **Recommended configuration:** 3 config servers (required for production)
 
-### 3. 分片服务器配置
+### 3. Shard Server Configuration
 
 ```bash
-# 分片服务器配置
-SHARD_PORTS=(27023 27024 27025)   # 分片服务器端口列表
-SHARD_COUNT=${#SHARD_PORTS[@]}    # 自动计算分片服务器数量
+# shard server configuration
+SHARD_PORTS=(27023 27024 27025)   # shard server port list
+SHARD_COUNT=${#SHARD_PORTS[@]}    # automatically calculate shard server count
 ```
 
-**说明：**
-- `SHARD_PORTS`：数组，包含第一个分片所有副本集成员的端口
-- `SHARD_COUNT`：自动计算，无需手动修改
-- **最少配置：** 1个分片服务器
-- **推荐配置：** 3个分片服务器以确保高可用性
+**Description:**
+- `SHARD_PORTS`: Array containing all replica set member ports for the first shard
+- `SHARD_COUNT`: Automatically calculated, no manual modification needed
+- **Minimum configuration:** 1 shard server
+- **Recommended configuration:** 3 shard servers to ensure high availability
 
-### 4. 其他配置
+### 4. Other Configuration
 
 ```bash
-# 默认连接端口（通常使用第一个mongos端口）
+# default connection port (usually the first mongos port)
 DEFAULT_MONGOS_PORT=${MONGOS_PORTS[0]}
 
-# 副本集名称
+# replica set names
 CONFIG_REPLICA_SET="configReplSet"
 SHARD_REPLICA_SET="shard1"
 ```
 
-## 配置示例
+## Configuration Examples
 
-### 示例1：最小配置（测试环境）
+### Example 1: Minimal Configuration (Test Environment)
 
 ```bash
-# 最小配置 - 单节点测试
+# minimal configuration - single node testing
 MONGOS_PORTS=(27017)
 CONFIG_PORTS=(27020)
 SHARD_PORTS=(27023)
 ```
 
-### 示例2：标准配置（开发环境）
+### Example 2: Standard Configuration (Development Environment)
 
 ```bash
-# 标准配置 - 当前默认配置
+# standard configuration - current default configuration
 MONGOS_PORTS=(27017 27018 27019)
 CONFIG_PORTS=(27020 27021 27022)
 SHARD_PORTS=(27023 27024 27025)
 ```
 
-### 示例3：自定义端口配置
+### Example 3: Custom Port Configuration
 
 ```bash
-# 自定义端口配置
+# custom port configuration
 MONGOS_PORTS=(28017 28018)
 CONFIG_PORTS=(28020 28021 28022)
-SHARD_PORTS=(28023 28024 28025 28026 28027)  # 5个副本集成员
+SHARD_PORTS=(28023 28024 28025 28026 28027)  # 5 replica set members
 ```
 
-### 示例4：生产环境配置
+### Example 4: Production Environment Configuration
 
 ```bash
-# 生产环境配置
-MONGOS_PORTS=(27017 27018 27019 27020 27021)  # 5个mongos
-CONFIG_PORTS=(27030 27031 27032)               # 3个配置服务器
-SHARD_PORTS=(27040 27041 27042)                # 3个分片服务器
+# production environment configuration
+MONGOS_PORTS=(27017 27018 27019 27020 27021)  # 5 mongos
+CONFIG_PORTS=(27030 27031 27032)               # 3 config servers
+SHARD_PORTS=(27040 27041 27042)                # 3 shard servers
 ```
 
-## 配置验证
+## Configuration Validation
 
-脚本会自动验证配置的有效性：
+The script automatically validates the configuration:
 
-- **必需检查：** 确保至少有1个mongos、1个配置服务器、1个分片服务器
-- **推荐检查：** 如果配置服务器或分片服务器少于3个，会显示警告
-- **端口检查：** 确保所有端口都可访问
+- **Required checks:** Ensure at least 1 mongos, 1 config server, 1 shard server
+- **Recommended checks:** Warning displayed if config servers or shard servers are fewer than 3
+- **Port checks:** Ensure all ports are accessible
 
-## 修改配置的步骤
+## Steps to Modify Configuration
 
-1. **编辑脚本**
+1. **Edit the script**
    ```bash
    vim test-cluster.sh
-   # 或使用您喜欢的编辑器
+   # or use your preferred editor
    ```
 
-2. **找到配置区域**
+2. **Find the configuration section**
    ```bash
-   # 查找 "📝 集群配置参数" 区域（大约第10-30行）
+   # Look for "📝 Cluster Configuration Parameters" section (around lines 10-30)
    ```
 
-3. **修改端口数组**
+3. **Modify port arrays**
    ```bash
-   # 根据您的部署修改端口数组
-   MONGOS_PORTS=(您的mongos端口)
-   CONFIG_PORTS=(您的配置服务器端口)
-   SHARD_PORTS=(您的分片服务器端口)
+   # Modify port arrays according to your deployment
+   MONGOS_PORTS=(your mongos ports)
+   CONFIG_PORTS=(your config server ports)
+   SHARD_PORTS=(your shard server ports)
    ```
 
-4. **保存并测试**
+4. **Save and test**
    ```bash
-   # 保存文件后运行测试
+   # Run test after saving the file
    ./test-cluster.sh
    ```
 
-## 注意事项
+## Important Notes
 
-### 端口冲突
-- 确保配置的端口与实际部署的MongoDB实例端口一致
-- 避免端口冲突，每个组件使用不同的端口
+### Port Conflicts
+- Ensure configured ports match the actual deployed MongoDB instance ports
+- Avoid port conflicts, use different ports for each component
 
-### 网络访问
-- 脚本默认使用 `localhost` 连接
-- 确保所有配置的端口都可以从运行脚本的机器访问
+### Network Access
+- Script defaults to `localhost` connections
+- Ensure all configured ports are accessible from the machine running the script
 
-### 副本集名称
-- 如果您的部署使用了不同的副本集名称，请同时修改：
+### Replica Set Names
+- If your deployment uses different replica set names, also modify:
   ```bash
-  CONFIG_REPLICA_SET="您的配置服务器副本集名称"
-  SHARD_REPLICA_SET="您的分片副本集名称"
+  CONFIG_REPLICA_SET="your config server replica set name"
+  SHARD_REPLICA_SET="your shard replica set name"
   ```
 
-### 多分片支持
-- 当前脚本支持单个分片的测试
-- 如需支持多个分片，需要扩展脚本逻辑
+### Multi-shard Support
+- Current script supports single shard testing
+- To support multiple shards, script logic needs to be extended
 
-## 故障排除
+## Troubleshooting
 
-### 连接失败
+### Connection Failures
 ```bash
-# 检查端口是否正确
+# check if ports are correct
 netstat -an | grep 27017
 
-# 检查MongoDB进程是否运行
+# check if MongoDB processes are running
 ps aux | grep mongod
 ```
 
-### 配置验证失败
+### Configuration Validation Failures
 ```bash
-# 检查配置参数是否正确
-echo "mongos端口: ${MONGOS_PORTS[*]}"
-echo "配置服务器端口: ${CONFIG_PORTS[*]}"
-echo "分片服务器端口: ${SHARD_PORTS[*]}"
+# check if configuration parameters are correct
+echo "mongos ports: ${MONGOS_PORTS[*]}"
+echo "config server ports: ${CONFIG_PORTS[*]}"
+echo "shard server ports: ${SHARD_PORTS[*]}"
 ```
 
-## 贡献指南
+## Contributing Guidelines
 
-如果您发现配置问题或有改进建议，请：
+If you find configuration issues or have improvement suggestions:
 
-1. 在GitHub上提交Issue
-2. 提供详细的配置信息和错误日志
-3. 描述您的环境和期望的行为
+1. Submit an Issue on GitHub
+2. Provide detailed configuration information and error logs
+3. Describe your environment and expected behavior
 
-## 联系方式
+## Contact Information
 
-如有问题，请通过以下方式联系：
+For questions, please contact through:
 
 - GitHub Issues: [mongodb-sharded-cluster-dev/issues](https://github.com/deadjoe/mongodb-sharded-cluster-dev/issues)
-- 邮件: 在GitHub仓库中查看贡献者信息
+- Email: Check contributor information in the GitHub repository
